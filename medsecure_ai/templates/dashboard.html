@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - MedSecure AI{% endblock %}
+{% block content %}
+{% include "partials/navbar.html" %}
+<div class="container-fluid px-3 px-md-4 px-xl-5 py-4">
+  {% include "partials/flash.html" %}
+
+  <section class="ms-welcome card ms-card p-3 p-md-4 mb-3">
+    <div class="row align-items-center g-2">
+      <div class="col-sm-7">
+        <h1 class="ms-title h3 mb-1">Welcome to MedSecure AI 👋</h1>
+        <p class="text-muted mb-0">Smart medicine analysis &amp; verification</p>
+      </div>
+      <div class="col-sm-5 d-flex justify-content-sm-end">
+        {% set mascot_name = session.get('user_name','').split()[0] if session.get('user_name') else '' %}
+        {% include "partials/mascot.html" %}
+      </div>
+    </div>
+  </section>
+
+  {% if due %}
+  <div class="ms-remind mb-3">
+    {% for r in due %}<div><i class="bi bi-bell-fill"></i> ⚠️ Your medicine <b>{{ r.name or 'from ' ~ (r.created_at|localdt('%d %b')) }}</b> expires in {{ r.days_left }} day{{ '' if r.days_left == 1 else 's' }}.</div>{% endfor %}
+    <form method="post" action="{{ url_for('main.reminders_toggle') }}" class="mt-1"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="next" value="{{ url_for('main.dashboard') }}">
+      <button class="btn btn-link btn-sm p-0 text-decoration-none">Turn off reminders</button></form>
+  </div>
+  {% endif %}
+  <div class="ms-safe mb-4"><i class="bi bi-shield-check"></i> <strong>Be safe!</strong> Scan your medicine before you take it.</div>
+
+  <section class="ms-verify card ms-card p-4 p-md-5 mb-4">
+    <div class="row align-items-center g-3">
+      <div class="col-md-8">
+        <div class="ms-verify-tag"><i class="bi bi-search"></i> VERIFY A MEDICINE</div>
+        <h2 class="h4 mt-2 mb-0">Check authenticity, medicine details &amp; expiry</h2>
+      </div>
+      <div class="col-md-4 text-md-end">
+        <a href="{{ url_for('main.analyze') }}" class="btn btn-light btn-lg fw-semibold">Start Verification <i class="bi bi-arrow-right"></i></a>
+      </div>
+    </div>
+  </section>
+
+  <h3 class="ms-section-title">ANALYZE MEDICINE</h3>
+  <div class="row g-3 mb-4">
+    <div class="col-12 col-sm-4"><a href="{{ url_for('main.analyze_live') }}" class="ms-tile c-sky">
+      <i class="bi bi-camera"></i><strong>Live Scanner</strong><span>Scan medicine using camera</span></a></div>
+    <div class="col-12 col-sm-4"><a href="{{ url_for('main.analyze_upload') }}" class="ms-tile c-teal">
+      <i class="bi bi-upload"></i><strong>Upload Image</strong><span>Upload medicine image</span></a></div>
+    <div class="col-12 col-sm-4"><a href="{{ url_for('main.analyze_qr') }}" class="ms-tile c-violet">
+      <i class="bi bi-qr-code-scan"></i><strong>QR Scanner</strong><span>Scan QR code</span></a></div>
+  </div>
+
+  <div class="d-flex flex-wrap justify-content-md-end gap-2 mb-4">
+    <a href="{{ url_for('main.pharmacy') }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-geo-alt"></i> Nearby Pharmacy</a>
+    <a href="https://www.1mg.com" target="_blank" rel="noopener" class="btn btn-outline-secondary btn-sm"><i class="bi bi-cart"></i> Tata 1mg</a>
+    <a href="https://www.apollopharmacy.in" target="_blank" rel="noopener" class="btn btn-outline-secondary btn-sm"><i class="bi bi-cart"></i> Apollo</a>
+  </div>
+
+  {% include "partials/tips.html" %}
+  <p class="small text-muted text-center mb-0"><i class="bi bi-info-circle"></i> MedSecure AI is an assistive verification tool. It does not replace professional or pharmacist verification.</p>
+</div>
+<script src="{{ url_for('static', filename='js/mascot.js') }}"></script>
+{% endblock %}

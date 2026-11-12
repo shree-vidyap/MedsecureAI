@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Report - MedSecure AI{% endblock %}
+{% block content %}
+<nav class="ms-navbar d-flex justify-content-between align-items-center px-3 py-3">
+  <a href="{{ url_for('main.history' if origin == 'history' else 'main.reports') }}" class="ms-back"><i class="bi bi-arrow-left"></i> {{ 'History' if origin == 'history' else 'Reports' }}</a>
+  <span class="ms-brand">MedSecure AI</span>
+</nav>
+<div class="container-fluid px-3 px-md-4 px-xl-5 py-4"><div class="row justify-content-center"><div class="col-12 col-lg-10 col-xl-9">
+  {% include "partials/flash.html" %}
+  <p class="text-center text-muted small mb-1">Analysed on {{ a.created_at|localdt }}</p>
+  {% include "partials/result_body.html" %}
+  {% include "partials/buy_online.html" %}
+  <div class="row g-2 mt-3">
+    <div class="col-12 col-sm-6"><a href="{{ url_for('main.report_pdf', rid=a.id) }}" class="btn btn-outline-success w-100"><i class="bi bi-download"></i> Download PDF</a></div>
+    <div class="col-12 col-sm-6">
+      <form method="post" action="{{ url_for('main.report_delete', rid=a.id) }}" onsubmit="return confirm('Delete this report?');">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="from" value="{{ origin }}">
+        <button class="btn btn-outline-danger w-100"><i class="bi bi-trash"></i> Delete</button></form>
+    </div>
+  </div>
+  <p class="small text-muted text-center mt-3"><i class="bi bi-info-circle"></i> MedSecure AI is an assistive verification tool. It does not replace professional or pharmacist verification.</p>
+</div></div></div>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Nearby Pharmacy - MedSecure AI{% endblock %}
+{% block content %}
+{% include "partials/navbar.html" %}
+<div class="container-fluid px-3 px-md-4 px-xl-5 py-4">
+  <a href="{{ url_for('main.dashboard') }}" class="ms-back"><i class="bi bi-arrow-left"></i> Nearby Pharmacy</a>
+  <div class="row justify-content-center"><div class="col-12 col-lg-8 col-xl-6">
+    {% include "partials/location_buy.html" %}
+    <p class="small text-muted text-center mt-3 mb-0">Map data and pharmacy listings are provided by Google Maps / OpenStreetMap. MedSecure AI does not check them.</p>
+  </div></div>
+</div>
+{% endblock %}

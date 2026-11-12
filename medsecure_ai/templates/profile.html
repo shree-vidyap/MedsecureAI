@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Profile - MedSecure AI{% endblock %}
+{% block content %}
+{% include "partials/navbar.html" %}
+<div class="container-fluid px-3 px-md-4 px-xl-5 py-4"><div class="row justify-content-center"><div class="col-12 col-lg-8 col-xl-6">
+  <a href="{{ url_for('main.dashboard') }}" class="ms-back"><i class="bi bi-arrow-left"></i> Profile</a>
+  <div class="mt-3">{% include "partials/flash.html" %}</div>
+  <div class="card ms-card p-4 text-center">
+    {% if user.profile_photo %}<img src="{{ url_for('static', filename=user.profile_photo) }}?v={{ user.profile_photo|length }}{{ range(1,99999)|random }}" class="ms-avatar mx-auto" alt="Profile photo">
+    {% else %}<div class="ms-avatar ms-avatar-ph mx-auto">{{ user.name[:1]|upper }}</div>{% endif %}
+    <h1 class="h4 ms-title mt-3 mb-0">{{ user.name }}</h1>
+    <div class="text-muted">{{ user.email }}</div>
+  </div>
+
+  <h3 class="ms-section-title mt-4">📊 ANALYSIS STATISTICS</h3>
+  <div class="row g-2 text-center">
+    <div class="col-6 col-md"><div class="ms-stat"><b>{{ stats.total }}</b><span>Total Analyses</span></div></div>
+    <div class="col-6 col-md"><div class="ms-stat s-ok"><b>{{ stats.genuine }}</b><span>Genuine</span></div></div>
+    <div class="col-6 col-md"><div class="ms-stat s-warn"><b>{{ stats.suspicious }}</b><span>Suspicious</span></div></div>
+    <div class="col-6 col-md"><div class="ms-stat s-bad"><b>{{ stats.counterfeit }}</b><span>Counterfeit</span></div></div>
+    <div class="col-12 col-md"><div class="ms-stat s-bad"><b>{{ stats.expired }}</b><span>Expired</span></div></div>
+  </div>
+
+  <form method="post" action="{{ url_for('main.reminders_toggle') }}" class="card ms-card p-3 mt-3 flex-row justify-content-between align-items-center">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <span><i class="bi bi-bell"></i> Expiry reminders on the dashboard: <b>{{ 'On' if user.get('expiry_reminders', True) else 'Off' }}</b></span>
+    <button class="btn btn-sm btn-outline-secondary">Turn {{ 'off' if user.get('expiry_reminders', True) else 'on' }}</button>
+  </form>
+
+  <div class="d-grid gap-2 mt-3">
+    <button class="btn btn-light border text-start" data-bs-toggle="collapse" data-bs-target="#editBox"><i class="bi bi-pencil"></i> Edit Profile</button>
+    <div class="collapse" id="editBox"><form method="post" action="{{ url_for('main.profile_edit') }}" enctype="multipart/form-data" class="card ms-card p-3">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label class="form-label small">Name</label><input name="name" class="form-control mb-2" value="{{ user.name }}" required>
+      <label class="form-label small">Email</label><input type="email" name="email" class="form-control mb-2" value="{{ user.email }}" required>
+      <label class="form-label small">Profile photo (JPG / PNG, optional)</label><input type="file" name="photo" accept=".jpg,.jpeg,.png" class="form-control mb-3">
+      <button class="btn btn-ms">Save changes</button></form></div>
+
+    <button class="btn btn-light border text-start" data-bs-toggle="collapse" data-bs-target="#pwBox"><i class="bi bi-key"></i> Change Password</button>
+    <div class="collapse" id="pwBox"><form method="post" action="{{ url_for('main.profile_password') }}" class="card ms-card p-3">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="password" name="current" class="form-control mb-2" placeholder="Current password" required>
+      <input type="password" name="new" class="form-control mb-2" placeholder="New password (min 8 characters)" required>
+      <input type="password" name="confirm" class="form-control mb-3" placeholder="Confirm new password" required>
+      <button class="btn btn-ms">Change password</button></form></div>
+
+    <form method="post" action="{{ url_for('main.history_clear') }}" onsubmit="return confirm('Delete ALL saved analyses and their images? This cannot be undone.');">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button class="btn btn-light border text-start w-100 text-danger"><i class="bi bi-trash"></i> Clear History</button></form>
+    <a href="{{ url_for('auth.logout') }}" class="btn btn-light border text-start"><i class="bi bi-box-arrow-right"></i> Logout</a>
+  </div>
+</div></div></div>
+{% endblock %}

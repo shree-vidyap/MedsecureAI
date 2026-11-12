@@ -1,0 +1,23 @@
+venv/
+__pycache__/
+*.pyc
+.env
+static/uploads/*
+!static/uploads/.gitkeep
+reports_output/*
+!reports_output/.gitkeep
+
+# datasets (tumba doddadu)
+dataset_full/
+dataset_visual/
+dataset_strong/
+dataset_small/
+dataset_vsmall/
+dataset_ssmall/
+dataset_test/
+raw_packs/
+
+# hale backups
+trained_model_old/
+trained_model_v2/
+templates_backup/

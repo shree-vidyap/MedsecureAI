@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} - MedSecure AI{% endblock %}
+{% block content %}
+{% include "partials/navbar.html" %}
+<div class="container-fluid px-3 px-md-4 px-xl-5 py-4">
+  <a href="{{ url_for('main.analyze') }}" class="ms-back"><i class="bi bi-arrow-left"></i> {{ title }}</a>
+  <div class="row justify-content-center mt-3">
+    <div class="col-12 col-lg-8 col-xl-6">
+      {% include "partials/flash.html" %}
+      {% include "partials/modes.html" %}
+      <div class="ms-sits">{% include "partials/mascot.html" %}</div>
+
+      <div class="card ms-card ms-upload p-3 p-md-4 pt-5" id="scanRoot" data-mode="{{ mode }}" data-upload="{{ url_for('main.analyze_upload') }}" data-save="{{ url_for('main.scan_save') }}" data-csrf="{{ csrf_token() }}">
+        <span class="ms-plus">✚</span>
+        <h2 class="h5 ms-title text-center mb-3 mt-2">{{ title }}</h2>
+        <div class="ms-viewfinder">
+          <video id="cam" playsinline muted></video>
+          <div id="camPh" class="ms-cam-ph"><i class="bi {{ icon }}"></i><span>{{ hint }}</span></div>
+          <span class="c tl"></span><span class="c tr"></span><span class="c bl"></span><span class="c br"></span><span class="ms-scanline"></span>
+        </div>
+        <div id="scanMsg" class="ms-status mt-3 d-none"><i class="bi bi-info-circle"></i><div><p class="mb-0"></p></div></div>
+        <div class="d-flex gap-2 mt-3 flex-wrap">
+          <button id="startBtn" class="btn btn-ms flex-fill"><i class="bi bi-camera-video"></i> Start Camera</button>
+          {% if mode == 'live' %}<button id="captureBtn" class="btn btn-ms flex-fill" disabled><i class="bi bi-record-circle"></i> Capture &amp; Analyze</button>{% endif %}
+          <button id="stopBtn" class="btn btn-outline-secondary" disabled>Stop</button>
+        </div>
+        {% if mode != 'live' %}
+        <div id="scanResult" class="ms-scan-result d-none">
+          <div class="small text-muted">{{ 'QR code' if mode=='qr' else 'Barcode' }} detected</div>
+          <code id="scanValue"></code>
+          <div class="small text-muted mt-1">This data is shown as scanned. It is not verified yet.</div>
+          <div id="savedNote" class="small text-success mt-2 d-none"><i class="bi bi-check-circle"></i> Saved. It will be added to your next analysis.</div>
+          <a id="goAnalyze" href="{{ url_for('main.analyze') }}" class="btn btn-sm btn-outline-success mt-2 d-none">Upload a photo of this medicine <i class="bi bi-arrow-right"></i></a>
+          <div class="d-flex gap-2 mt-2"><button id="copyBtn" class="btn btn-sm btn-outline-secondary">Copy</button><button id="againBtn" class="btn btn-sm btn-ms">Scan again</button></div>
+        </div>
+        {% endif %}
+        <form id="liveForm" method="post" action="{{ url_for('main.analyze_upload') }}" enctype="multipart/form-data" hidden><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="file" name="image" id="liveInput"></form>
+      </div>
+      <p class="small text-muted text-center mt-4 mb-0"><i class="bi bi-info-circle"></i> MedSecure AI is an assistive verification tool. It does not replace professional or pharmacist verification.</p>
+    </div>
+  </div>
+</div>
+{% if mode == 'qr' %}<script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"></script>{% endif %}
+<script src="{{ url_for('static', filename='js/scanner.js') }}"></script>
+<script src="{{ url_for('static', filename='js/mascot.js') }}"></script>
+{% endblock %}

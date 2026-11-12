@@ -1,0 +1,6 @@
+<div class="ms-modes">
+  <a href="{{ url_for('main.analyze') }}" class="ms-mode {{ 'active' if active=='upload' }}"><i class="bi bi-upload"></i><span>Upload</span></a>
+  <a href="{{ url_for('main.analyze_live') }}" class="ms-mode {{ 'active' if active=='live' }}"><i class="bi bi-camera"></i><span>Live</span></a>
+  <a href="{{ url_for('main.analyze_qr') }}" class="ms-mode {{ 'active' if active=='qr' }}"><i class="bi bi-qr-code-scan"></i><span>QR</span></a>
+  <a href="{{ url_for('main.analyze_barcode') }}" class="ms-mode {{ 'active' if active=='barcode' }}"><i class="bi bi-upc-scan"></i><span>Barcode</span></a>
+</div>

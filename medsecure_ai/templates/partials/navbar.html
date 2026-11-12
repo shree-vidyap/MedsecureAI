@@ -1,0 +1,44 @@
+<nav class="ms-navbar d-flex justify-content-between align-items-center px-3 py-2">
+  <div class="d-flex align-items-center gap-2">
+    <button class="btn btn-light ms-icon-btn" data-bs-toggle="offcanvas" data-bs-target="#msMenu" aria-label="Menu">
+      <i class="bi bi-list fs-4"></i>
+    </button>
+    <a href="{{ url_for('main.dashboard') }}" class="ms-brand text-decoration-none">MedSecure AI</a>
+  </div>
+  <a href="{{ url_for('main.profile') }}" class="btn btn-light ms-icon-btn" aria-label="Profile">
+    <i class="bi bi-person-circle fs-5"></i> <span class="d-none d-sm-inline">Profile</span>
+  </a>
+</nav>
+
+<div class="offcanvas offcanvas-start" tabindex="-1" id="msMenu">
+  <div class="offcanvas-header">
+    <h5 class="ms-brand mb-0"><i class="bi bi-shield-plus"></i> MedSecure AI</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+  </div>
+  <div class="offcanvas-body pt-0">
+    <div class="small text-muted mb-3">Hello, {{ session.get('user_name', '') }}</div>
+    <ul class="ms-menu list-unstyled">
+      <li><a href="{{ url_for('main.profile') }}"><i class="bi bi-person"></i> Profile</a></li>
+      <li>
+        <a data-bs-toggle="collapse" href="#subAnalyze" role="button"><i class="bi bi-search"></i> Analyze Medicine <i class="bi bi-chevron-down ms-auto small"></i></a>
+        <ul class="collapse list-unstyled ms-sub" id="subAnalyze">
+          <li><a href="{{ url_for('main.analyze_live') }}"><i class="bi bi-camera"></i> Live Scanner</a></li>
+          <li><a href="{{ url_for('main.analyze_qr') }}"><i class="bi bi-qr-code-scan"></i> QR Scanner</a></li>
+          <li><a href="{{ url_for('main.analyze_barcode') }}"><i class="bi bi-upc-scan"></i> Barcode Scanner</a></li>
+          <li><a href="{{ url_for('main.analyze_upload') }}"><i class="bi bi-upload"></i> Upload Image</a></li>
+        </ul>
+      </li>
+      <li><a href="{{ url_for('main.pharmacy') }}"><i class="bi bi-geo-alt"></i> Nearby Pharmacy</a></li>
+      <li>
+        <a data-bs-toggle="collapse" href="#subOnline" role="button"><i class="bi bi-cart"></i> Online Medicine <i class="bi bi-chevron-down ms-auto small"></i></a>
+        <ul class="collapse list-unstyled ms-sub" id="subOnline">
+          <li><a href="https://www.1mg.com" target="_blank" rel="noopener">Tata 1mg <i class="bi bi-box-arrow-up-right small ms-auto"></i></a></li>
+          <li><a href="https://www.apollopharmacy.in" target="_blank" rel="noopener">Apollo <i class="bi bi-box-arrow-up-right small ms-auto"></i></a></li>
+        </ul>
+      </li>
+      <li><a href="{{ url_for('main.reports') }}"><i class="bi bi-file-earmark-text"></i> Reports</a></li>
+      <li><a href="{{ url_for('main.history') }}"><i class="bi bi-clock-history"></i> History</a></li>
+      <li><a href="{{ url_for('auth.logout') }}" class="text-danger"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+    </ul>
+  </div>
+</div>

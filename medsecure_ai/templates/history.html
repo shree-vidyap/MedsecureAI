@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}History - MedSecure AI{% endblock %}
+{% block content %}
+{% include "partials/navbar.html" %}
+<div class="container-fluid px-3 px-md-4 px-xl-5 py-4">
+  <a href="{{ url_for('main.dashboard') }}" class="ms-back"><i class="bi bi-arrow-left"></i> History</a>
+  <div class="mt-3">{% include "partials/flash.html" %}</div>
+  <div class="ms-chips my-3">
+    <a href="{{ url_for('main.history') }}" class="{{ 'active' if f == 'all' }}">All <span>{{ stats.total }}</span></a>
+    <a href="{{ url_for('main.history', f='genuine') }}" class="{{ 'active' if f == 'genuine' }}">✅ Genuine <span>{{ stats.genuine }}</span></a>
+    <a href="{{ url_for('main.history', f='suspicious') }}" class="{{ 'active' if f == 'suspicious' }}">⚠️ Suspicious <span>{{ stats.suspicious }}</span></a>
+    <a href="{{ url_for('main.history', f='counterfeit') }}" class="{{ 'active' if f == 'counterfeit' }}">❌ Counterfeit <span>{{ stats.counterfeit }}</span></a>
+    <a href="{{ url_for('main.history', f='expired') }}" class="{{ 'active' if f == 'expired' }}">⌛ Expired <span>{{ stats.expired }}</span></a>
+  </div>
+  {% if not reports %}
+    <div class="card ms-card p-5 text-center"><div class="ms-logo"><i class="bi bi-clock-history"></i></div>
+      <p class="text-muted mb-3">{{ 'No analyses saved yet.' if f == 'all' else 'No analyses in this category.' }}</p>
+      <a href="{{ url_for('main.analyze') }}" class="btn btn-ms mx-auto">Analyze a Medicine</a></div>
+  {% else %}
+  <div class="row g-3">
+    {% for r in reports %}
+    <div class="col-12 col-md-6 col-xl-4"><a href="{{ url_for('main.report_view', rid=r.id, **{'from':'history'}) }}" class="ms-hist">
+      <img src="{{ url_for('static', filename=r.image) }}" alt="">
+      <div class="ms-hist-body">
+        <strong>{{ r.name or 'Unknown medicine' }}</strong>
+        <div>{% if r.result %}<span class="ms-pill ms-{{ {'Genuine':'ok','Suspicious':'warn','Counterfeit':'bad'}[r.result] }}">{{ r.result }}{% if r.overall_confidence is not none %} · {{ r.overall_confidence|round|int }}%{% endif %}</span>
+          {% else %}<span class="ms-pill ms-na">Not assessed</span>{% endif %}
+          {% if r.expiry_status %}<span class="ms-pill ms-{{ {'Valid':'ok','Expiring Soon':'warn','Expired':'bad'}[r.expiry_status] }}">{{ r.expiry_status }}</span>{% endif %}</div>
+        <small class="text-muted">{{ r.created_at|localdt }}</small>
+      </div></a></div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

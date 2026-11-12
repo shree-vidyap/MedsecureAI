@@ -1,0 +1,9 @@
+{% if a and a.expiry_status == 'Expired' %}
+<div class="card ms-card p-4 mt-3">
+  <h2 class="ms-section-title mb-2">🛒 THIS MEDICINE IS EXPIRED</h2>
+  <p class="small text-muted">Do not use it. If you need a fresh pack, you can look for it on Apollo Pharmacy. This only opens an external website and is not a medical recommendation.</p>
+  <div class="d-flex flex-wrap gap-2">
+    <a href="{% if a.name %}https://www.apollopharmacy.in/search-medicines/{{ a.name|urlencode }}{% else %}https://www.apollopharmacy.in{% endif %}" target="_blank" rel="noopener" class="btn btn-ms">Buy a new pack on Apollo <i class="bi bi-box-arrow-up-right small"></i></a>
+  </div>
+</div>
+{% endif %}

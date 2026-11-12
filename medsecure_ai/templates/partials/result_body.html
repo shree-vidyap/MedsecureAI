@@ -1,0 +1,74 @@
+{% macro val(x) %}{% if x %}{{ x }}{% else %}<span class="ms-nd">Not Detected</span>{% endif %}{% endmacro %}
+<h1 class="ms-section-title text-center">MEDICINE ANALYSIS RESULT</h1>
+<div class="text-center">
+  {% if a.image %}<img src="{{ url_for('static', filename=a.image) }}" class="ms-result-img" alt="Medicine image">{% endif %}
+  {% if a.result %}
+    {% set cls = {'Genuine':'ok','Suspicious':'warn','Counterfeit':'bad'}[a.result] %}
+    {% set icon = {'Genuine':'✅','Suspicious':'⚠️','Counterfeit':'❌'}[a.result] %}
+    <div class="ms-result ms-{{ cls }}">{{ icon }} {{ a.result }}</div>
+    <div class="ms-conf">Confidence: {{ a.overall_confidence|round|int }}%</div>
+  {% else %}
+    <div class="ms-result ms-na">Authenticity not assessed</div>
+    <div class="small text-muted mt-2">The AI model was not available, so no Genuine / Counterfeit result is shown.</div>
+  {% endif %}
+  {% if a.expiry_status %}
+    {% set ecls = {'Valid':'ok','Expiring Soon':'warn','Expired':'bad'}[a.expiry_status] %}
+    {% set eicon = {'Valid':'✅','Expiring Soon':'⚠️','Expired':'❌'}[a.expiry_status] %}
+    <div class="mt-3"><span class="ms-exp ms-{{ ecls }}">Expiry Status: {{ eicon }} {{ a.expiry_status }}</span></div>
+    {% if a.expiry_status == 'Expired' %}<div class="small text-muted mt-1">Expired is not the same as counterfeit. Do not use this medicine.</div>
+    {% elif a.expiry_status == 'Expiring Soon' %}<div class="small text-muted mt-1">⚠️ Your medicine expires in {{ a.days_left }} day{{ '' if a.days_left == 1 else 's' }}.</div>{% endif %}
+  {% else %}
+    <div class="mt-3 small text-muted">Expiry date could not be detected.</div>
+  {% endif %}
+</div>
+
+<div class="row g-3 mt-2">
+  <div class="col-12 col-md-6"><div class="card ms-card p-4 h-100">
+    <h2 class="ms-section-title mb-3">💊 MEDICINE DETAILS</h2>
+    <table class="table table-sm ms-table mb-0"><tbody>
+      <tr><th>Medicine Name</th><td>{{ val(a.name) }}</td></tr>
+      <tr><th>Manufacturer</th><td>{{ val(a.manufacturer) }}</td></tr>
+      <tr><th>Batch Number</th><td>{{ val(a.batch) }}</td></tr>
+      <tr><th>Manufacturing Date</th><td>{{ val(a.mfg) }}</td></tr>
+      <tr><th>Expiry Date</th><td>{{ val(a.exp) }}</td></tr>
+    </tbody></table>
+    <p class="small text-muted mt-3 mb-0">Read automatically from the image text. Please check them against the pack.</p>
+  </div></div>
+  <div class="col-12 col-md-6"><div class="card ms-card p-4 h-100">
+    <h2 class="ms-section-title mb-3">📊 ANALYSIS SCORES</h2>
+    <div class="d-flex justify-content-between"><span>🤖 AI Confidence Score</span><strong>{% if a.ai_confidence is not none %}{{ a.ai_confidence }}%{% else %}<span class="ms-nd">Not available</span>{% endif %}</strong></div>
+    <div class="progress mt-2 mb-3" style="height:10px"><div class="progress-bar bg-success" style="width:{{ a.ai_confidence or 0 }}%"></div></div>
+    <div class="d-flex justify-content-between"><span>📝 OCR Confidence Score</span><strong>{% if a.ocr_conf is not none %}{{ a.ocr_conf }}%{% else %}<span class="ms-nd">Not available</span>{% endif %}</strong></div>
+    <div class="progress mt-2" style="height:10px"><div class="progress-bar bg-info" style="width:{{ a.ocr_conf or 0 }}%"></div></div>
+    {% if a.result %}<p class="small text-muted mt-3 mb-0">Overall confidence is the AI confidence. The OCR score only shows how clearly the text was read.</p>{% endif %}
+  </div></div>
+</div>
+
+<div class="card ms-card p-4 mt-3">
+  <h2 class="ms-section-title mb-3">📝 EXTRACTED DATA</h2>
+  <div class="ms-extract"><span>OCR text</span>{% if a.ocr_text %}<b class="text-success">Detected</b>{% else %}<b class="text-danger">Not detected</b>{% endif %}</div>
+  {% if a.ocr_text %}<pre class="ms-ocr-text">{{ a.ocr_text }}</pre>{% endif %}
+  {% if a.ocr_error %}<div class="ms-status ms-status-bad mt-2 mb-0"><i class="bi bi-exclamation-circle"></i><div><p>{{ a.ocr_error }}</p></div></div>{% endif %}
+  <div class="ms-extract"><span>QR Code</span>{% if a.qr %}<b class="text-success">Detected</b>{% else %}<b class="text-danger">QR Code Not Detected.</b>{% endif %}</div>
+  {% if a.qr %}<pre class="ms-ocr-text">{{ a.qr.data }}</pre><div class="small text-muted mb-2">Read from {{ 'the image' if a.qr.source == 'image' else 'the live scanner' }}. Shown as scanned, not verified. Do not open unknown links.</div>{% endif %}
+  <div class="ms-extract"><span>Barcode</span>{% if a.barcode %}<b class="text-success">Detected</b>{% elif a.barcode_error %}<b class="text-muted">Decoder not available</b>{% else %}<b class="text-danger">Barcode Not Detected.</b>{% endif %}</div>
+  {% if a.barcode %}<pre class="ms-ocr-text">{{ a.barcode.data }}{% if a.barcode.type %}  ({{ a.barcode.type }}){% endif %}</pre><div class="small text-muted mb-2">Read from {{ 'the image' if a.barcode.source == 'image' else 'the live scanner' }}. Shown as scanned, not verified.</div>{% endif %}
+  {% if a.barcode_error %}<div class="small text-muted">{{ a.barcode_error }} (optional: pip install pyzbar)</div>{% endif %}
+</div>
+
+{% if a.verify %}
+<div class="card ms-card p-4 mt-3">
+  <h2 class="ms-section-title mb-3">🔎 CODE CHECKS (QR + BARCODE)</h2>
+  {% for c in a.verify.checks %}
+    <div class="ms-extract"><span>{{ c.label }}</span>
+      {% if c.status == 'ok' %}<b class="text-success">Pass</b>{% elif c.status == 'bad' %}<b class="text-danger">Mismatch</b>{% else %}<b class="text-muted">Not checked</b>{% endif %}</div>
+    <div class="small text-muted mb-2">{{ c.text }}</div>
+  {% endfor %}
+  {% if a.override %}<div class="ms-status ms-status-bad mt-2 mb-0"><i class="bi bi-exclamation-triangle"></i><div><strong>Result changed to Suspicious</strong><p>The AI model said Genuine, but a code check failed (see Mismatch above). Verify the pack with a pharmacist.</p></div></div>{% endif %}
+  <p class="small text-muted mt-3 mb-0">Pass only means the numbers are consistent. A copy can still print a valid check digit, so this does not prove the medicine is genuine.</p>
+</div>
+{% endif %}
+
+{% if a.model_note %}
+<div class="ms-status mt-3"><i class="bi bi-cpu"></i><div><strong>AI model is not ready</strong><p>{{ a.model_note }}</p></div></div>
+{% endif %}

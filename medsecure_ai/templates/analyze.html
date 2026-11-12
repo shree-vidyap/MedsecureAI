@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Analyze Medicine - MedSecure AI{% endblock %}
+{% block content %}
+{% include "partials/navbar.html" %}
+<div class="container-fluid px-3 px-md-4 px-xl-5 py-4">
+  <a href="{{ url_for('main.dashboard') }}" class="ms-back"><i class="bi bi-arrow-left"></i> Analyze Medicine</a>
+  <div class="row justify-content-center mt-3">
+    <div class="col-12 col-lg-8 col-xl-6">
+      {% include "partials/flash.html" %}
+      {% if not model_ok %}
+        <div class="ms-status"><i class="bi bi-cpu"></i><div><strong>AI authenticity check is off</strong><p>{{ model_err }} OCR, medicine details and the expiry check still work.</p></div></div>
+      {% endif %}
+      {% include "partials/modes.html" %}
+
+      <div class="ms-sits">{% include "partials/mascot.html" %}</div>
+      <form id="uploadForm" method="post" action="{{ url_for('main.analyze_upload') }}" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="card ms-card ms-upload p-4 pt-5 text-center">
+          <span class="ms-plus">✚</span>
+          <h2 class="h5 ms-title mb-1 mt-2">Upload Image</h2>
+          <p class="text-muted small mb-3">JPG, JPEG or PNG · clear photo of the medicine pack</p>
+          <label for="imageInput" id="dropZone" class="ms-drop">
+            <span class="c tl"></span><span class="c tr"></span><span class="c bl"></span><span class="c br"></span><span class="ms-scanline"></span>
+            <img id="previewImg" class="d-none" alt="Preview">
+            <div id="dropText"><i class="bi bi-cloud-arrow-up"></i><br>Click to choose, or drag &amp; drop here</div>
+          </label>
+          <input type="file" id="imageInput" name="image" accept=".jpg,.jpeg,.png,image/jpeg,image/png" hidden>
+          <button id="analyzeBtn" class="btn btn-ms btn-lg w-100 mt-3">
+            <span id="btnText"><i class="bi bi-search"></i> Analyze Medicine</span>
+            <span id="btnSpin" class="d-none"><span class="spinner-border spinner-border-sm"></span> Analyzing...</span>
+          </button>
+        </div>
+      </form>
+      <p class="small text-muted text-center mt-4 mb-0"><i class="bi bi-info-circle"></i> MedSecure AI is an assistive verification tool. It does not replace professional or pharmacist verification.</p>
+    </div>
+  </div>
+</div>
+<script src="{{ url_for('static', filename='js/analyze.js') }}"></script>
+<script src="{{ url_for('static', filename='js/mascot.js') }}"></script>
+{% endblock %}

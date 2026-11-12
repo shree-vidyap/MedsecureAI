@@ -1,0 +1,30 @@
+{
+  "preprocess": "raw",
+  "img_size": [
+    224,
+    224
+  ],
+  "trained_at": "2026-10-04T13:46:18",
+  "counterfeit_source": "simulated defects: blur_print, lowres_print, text_misaligned, no_hologram",
+  "pretrained_imagenet": true,
+  "test_accuracy": 0.8765,
+  "test_images": 2000,
+  "train_counts": {
+    "counterfeit": 4000,
+    "genuine": 4000
+  },
+  "confusion": {
+    "tn": 753,
+    "fp": 247,
+    "fn": 0,
+    "tp": 1000
+  },
+  "genuine": {
+    "precision": 0.8019,
+    "recall": 1.0
+  },
+  "counterfeit": {
+    "precision": 1.0,
+    "recall": 0.753
+  }
+}

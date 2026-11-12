@@ -1,0 +1,5 @@
+# AI model (needed for the Genuine / Suspicious / Counterfeit result and for training)
+tensorflow>=2.20.0
+
+# OPTIONAL: extra barcode decoder (Windows: needs "Microsoft Visual C++ Redistributable")
+# pyzbar

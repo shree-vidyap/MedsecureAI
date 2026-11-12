@@ -1,0 +1,16 @@
+{
+  "preprocess": "raw",
+  "img_size": [
+    224,
+    224
+  ],
+  "trained_at": "2026-10-04T13:46:18",
+  "counterfeit_source": "simulated defects: blur_print, lowres_print, text_misaligned, no_hologram",
+  "pretrained_imagenet": true,
+  "test_accuracy": 0.8765,
+  "test_images": 2000,
+  "decision_threshold": 0.83,
+  "test_auc": 0.9608,
+  "test_accuracy_at_threshold": 0.915,
+  "threshold_chosen_on": "validation"
+}
